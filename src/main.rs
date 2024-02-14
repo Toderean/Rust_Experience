@@ -1,5 +1,6 @@
 // use std::io::{self, Read};
 
+//4.3 se continua pe Cap5
 
 //can't have multiple mutable reference
 // let mut s = String::from("hello");
@@ -46,3 +47,4 @@ fn fibonacci(index: i32) -> i32 {
         fibonacci(index - 1) + fibonacci(index - 2)
     }
 }
+
