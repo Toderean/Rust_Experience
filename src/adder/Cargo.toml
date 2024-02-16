@@ -1,6 +1,5 @@
-workspace = { members = ["src/adder"] }
 [package]
-name = "hello_cargo"
+name = "adder"
 version = "0.1.0"
 edition = "2021"
 
