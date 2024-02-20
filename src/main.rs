@@ -1,55 +1,59 @@
-use std::{env, fs};
-use std::error::Error;
+// #[derive(Debug, PartialEq, Copy, Clone)]
+// enum ShirtColor {
+//     Red,
+//     Blue,
+// }
 
+// struct Inventory {
+//     shirts: Vec<ShirtColor>,
+// }
 
+// impl Inventory {
+//     fn giveaway(&self, user_preference: Option<ShirtColor>) -> ShirtColor {
+//         user_preference.unwrap_or_else(|| self.most_stocked())
+//     }
 
-struct Config{
-    query: String,
-    file_path: String,
-}
+//     fn most_stocked(&self) -> ShirtColor {
+//         let mut num_red = 0;
+//         let mut num_blue = 0;
+
+//         for color in &self.shirts {
+//             match color {
+//                 ShirtColor::Red => num_red += 1,
+//                 ShirtColor::Blue => num_blue += 1,
+//             }
+//         }
+//         if num_red > num_blue {
+//             ShirtColor::Red
+//         } else {
+//             ShirtColor::Blue
+//         }
+//     }
+// }
+
+// fn main() {
+//     let store = Inventory {
+//         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
+//     };
+
+//     let user_pref1 = Some(ShirtColor::Red);
+//     let giveaway1 = store.giveaway(user_pref1);
+//     println!(
+//         "The user with preference {:?} gets {:?}",
+//         user_pref1, giveaway1
+//     );
+
+//     let user_pref2 = None;
+//     let giveaway2 = store.giveaway(user_pref2);
+//     println!(
+//         "The user with preference {:?} gets {:?}",
+//         user_pref2, giveaway2
+//     );
+// }
+
 
 fn main(){
-    let args: Vec<String> = env::args().collect();
+    let a = "abc   cdf  ";
+    println!("{},orice",a);
 
-    // println!("command line = {:?}", args); 
-    // dbg!(args);
-    
-    // let first_command = &args[1];
-    // let second_command = &args[2];
-
-    // let config = parse_config(&args);
-    let config = Config::new(&args).unwrap();
-
-    println!("first command = {}", config.query);
-    println!("second command = {}", config.file_path);
-
-    run(config);
-}
-
-fn run(Config: Config)-> Result<(), Box<dyn Error>>{
-    let contents = fs::read_to_string(Config.file_path)?;
-    println!("with text {}", contents);
-    Ok(())
-}
-
-impl Config{
-    fn new(args: &[String]) -> Result<Config,&'static str> {
-        if(args.len() < 3){
-            return Err("not enough arguments");
-        }
-        let query = args[1].clone();
-        let file_path = args[2].clone();
-    
-        Ok(Config {query, file_path})    
-    }
-}
-fn parse_config(args: &[String]) -> Config{
-    // let first_command = &args[1];
-    // let second_command = &args[2];
-    // (first_command, second_command)
-    
-    let query = args[1].clone();
-    let file_path = args[2].clone();
-
-    Config {query, file_path}
 }
