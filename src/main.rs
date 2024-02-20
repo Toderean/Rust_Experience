@@ -1,50 +1,55 @@
-// use std::io::{self, Read};
-
-//4.3 se continua pe Cap5
-
-//can't have multiple mutable reference
-// let mut s = String::from("hello");
-// let r1 = &mut s;
-// let r2 = &mut s;
-// println!("{}, {}", r1, r2);
+use std::{env, fs};
+use std::error::Error;
 
 
-//but having references to others is permited
-// let mut s = String::from("hello");
-// let r1 = &s; // no problem
-// let r2 = &s; // no problem
-// let r3 = &mut s; // BIG PROBLEM
-// println!("{}, {}, and {}", r1, r2, r3);
 
-fn main() {
-    let x :[i32; 5] = [200,0,120,146,23];
-    for &index in &x{
-        let result:i32 = convert_to_celsius(index);
-        println!("result {} is : {}", index, result);
-    }
-    println!("the {} member of fibonacci sequence is {}", 19,fibonacci(2));
-
-    let mut s = String::from("hello");
-
-    change(&mut s);
-    println!("{}",s);
+struct Config{
+    query: String,
+    file_path: String,
 }
 
-fn change(some_string: &mut String) {
-    some_string.push_str(", world");
+fn main(){
+    let args: Vec<String> = env::args().collect();
+
+    // println!("command line = {:?}", args); 
+    // dbg!(args);
+    
+    // let first_command = &args[1];
+    // let second_command = &args[2];
+
+    // let config = parse_config(&args);
+    let config = Config::new(&args).unwrap();
+
+    println!("first command = {}", config.query);
+    println!("second command = {}", config.file_path);
+
+    run(config);
 }
 
-fn convert_to_celsius(x:i32) -> i32{
-    (x-32) * 5/9
+fn run(Config: Config)-> Result<(), Box<dyn Error>>{
+    let contents = fs::read_to_string(Config.file_path)?;
+    println!("with text {}", contents);
+    Ok(())
 }
 
-fn fibonacci(index: i32) -> i32 {
-    if index == 0 {
-        0
-    } else if index == 1 {
-        1
-    } else {
-        fibonacci(index - 1) + fibonacci(index - 2)
+impl Config{
+    fn new(args: &[String]) -> Result<Config,&'static str> {
+        if(args.len() < 3){
+            return Err("not enough arguments");
+        }
+        let query = args[1].clone();
+        let file_path = args[2].clone();
+    
+        Ok(Config {query, file_path})    
     }
 }
+fn parse_config(args: &[String]) -> Config{
+    // let first_command = &args[1];
+    // let second_command = &args[2];
+    // (first_command, second_command)
+    
+    let query = args[1].clone();
+    let file_path = args[2].clone();
 
+    Config {query, file_path}
+}
