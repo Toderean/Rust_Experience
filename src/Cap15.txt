@@ -1,0 +1,175 @@
+// // #[derive(Debug, PartialEq, Copy, Clone)]
+// // enum ShirtColor {
+// //     Red,
+// //     Blue,
+// // }
+
+// // struct Inventory {
+// //     shirts: Vec<ShirtColor>,
+// // }
+
+// // impl Inventory {
+// //     fn giveaway(&self, user_preference: Option<ShirtColor>) -> ShirtColor {
+// //         user_preference.unwrap_or_else(|| self.most_stocked())
+// //     }
+
+// //     fn most_stocked(&self) -> ShirtColor {
+// //         let mut num_red = 0;
+// //         let mut num_blue = 0;
+
+// //         for color in &self.shirts {
+// //             match color {
+// //                 ShirtColor::Red => num_red += 1,
+// //                 ShirtColor::Blue => num_blue += 1,
+// //             }
+// //         }
+// //         if num_red > num_blue {
+// //             ShirtColor::Red
+// //         } else {
+// //             ShirtColor::Blue
+// //         }
+// //     }
+// // }
+
+// // fn main() {
+// //     let store = Inventory {
+// //         shirts: vec![ShirtColor::Blue, ShirtColor::Red, ShirtColor::Blue],
+// //     };
+
+// //     let user_pref1 = Some(ShirtColor::Red);
+// //     let giveaway1 = store.giveaway(user_pref1);
+// //     println!(
+// //         "The user with preference {:?} gets {:?}",
+// //         user_pref1, giveaway1
+// //     );
+
+// //     let user_pref2 = None;
+// //     let giveaway2 = store.giveaway(user_pref2);
+// //     println!(
+// //         "The user with preference {:?} gets {:?}",
+// //         user_pref2, giveaway2
+// //     );
+// // }
+
+
+// use std::rc::Rc;
+// use core::cell::RefCell;
+// #[derive(Debug)]
+// enum List {
+//     Cons(i32, RefCell<Rc<List>>),
+//     Nil,
+// }
+
+// enum Message {
+//     Quit,
+//     Move { x: i32, y: i32 },
+//     Write(String),
+//     ChangeColor(i32, i32, i32),
+// }
+
+// struct MyBox<T>(T);
+
+// impl<T> MyBox<T> {
+//     fn new(x: T) -> MyBox<T> {
+//         MyBox(x)
+//     }
+// }
+
+// use std::ops::Deref;
+
+// impl<T> Deref for MyBox<T> {
+//     type Target = T;
+
+//     fn deref(&self) -> &Self::Target {
+//         &self.0
+//     }
+// }
+
+// use crate::List::{Cons,Nil};
+
+// impl List {
+//     fn tail(&self) -> Option<&RefCell<Rc<List>>> {
+//         match self {
+//             Cons(_, item) => Some(item),
+//             Nil => None,
+//         }
+//     }
+// }
+
+// fn main(){
+
+//     // let list = Cons(1, Box::new(Cons(2, Box::new(Cons(3, Box::new(Nil))))));
+//     // println!("{:?}",list);
+
+//     // let x = 5;
+//     // let y = &x;
+//     // println!("x = {} ; *y = {} ; y = {}",x,*y,y);
+
+
+//     // let a = Rc::new(Cons(5, Rc::new(Cons(10, Rc::new(Nil)))));
+//     // println!("first count {}", Rc::strong_count(&a));
+//     // let b = Cons(3, Rc::clone(&a));
+//     // println!("second count {}", Rc::strong_count(&a));
+//     // {
+//         // let c = Cons(4, Rc::clone(&a));
+//         // println!("third count {}", Rc::strong_count(&a));
+//     // }
+//     // println!("fourth count {}", Rc::strong_count(&a));
+
+//     // println!("list b = {:?}   list c  = {:?}", b,c);
+//     // let b = Box::new(5);
+//     // println!("b = {}",b);
+
+
+
+//     let a = Rc::new(Cons(5, RefCell::new(Rc::new(Nil))));
+
+//     println!("a initial rc count = {}", Rc::strong_count(&a));
+//     println!("a next item = {:?}", a.tail());
+
+//     let b = Rc::new(Cons(10, RefCell::new(Rc::clone(&a))));
+
+//     println!("a rc count after b creation = {}", Rc::strong_count(&a));
+//     println!("b initial rc count = {}", Rc::strong_count(&b));
+//     println!("b next item = {:?}", b.tail());
+
+//     if let Some(link) = a.tail() {
+//         *link.borrow_mut() = Rc::clone(&b);
+//     }
+
+//     println!("b rc count after changing a = {}", Rc::strong_count(&b));
+//     println!("a rc count after changing a = {}", Rc::strong_count(&a));
+
+//     // Uncomment the next line to see that we have a cycle;
+//     // it will overflow the stack
+//     // println!("a next item = {:?}", a.tail());
+// }
+
+use std::cell::RefCell;
+use std::rc::{Rc, Weak};
+
+#[derive(Debug)]
+struct Node {
+    value: i32,
+    parent: RefCell<Weak<Node>>,
+    children: RefCell<Vec<Rc<Node>>>,
+}
+fn main() {
+    let leaf = Rc::new(Node {
+        value: 3,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![]),
+    });
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+
+    let branch = Rc::new(Node {
+        value: 5,
+        parent: RefCell::new(Weak::new()),
+        children: RefCell::new(vec![Rc::clone(&leaf)]),
+    });
+
+    *leaf.parent.borrow_mut() = Rc::downgrade(&branch);
+
+    println!("leaf parent = {:?}", leaf.parent.borrow().upgrade());
+}
